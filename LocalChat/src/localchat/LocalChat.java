@@ -10,6 +10,7 @@ package localchat;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.util.Arrays;
 import javax.swing.*;
 import javax.swing.event.*;
 
@@ -24,7 +25,7 @@ public class LocalChat extends JFrame {
   private JTextField jTextFieldKey = new JTextField();
   private JComboBox jComboBoxTypes = new JComboBox();
   
-  private String[] onlineArr = {"localhost","","","","","","","","","","","","","","","","","","","",""};
+  private LocalChatJmDNS jmDNS = new LocalChatJmDNS();
   // Ende Attribute
   
   public LocalChat(String title) { 
@@ -85,13 +86,20 @@ public class LocalChat extends JFrame {
     // decryption
     String decryptMsg = decryptSend.decrypt(msg,key);
     
+    System.out.print(Arrays.toString(jmDNS.getIpIndex()));
+    
     for (int i=0;i<=20;i++) {
-      if (onlineArr[i]!="") {
-        client.send(decryptMsg,onlineArr[i]);
+      if (jmDNS.ipIndexAt(i)!=null) {
+        client.send(decryptMsg,jmDNS.ipIndexAt(i),jmDNS.portIndexAt(i));
       } // end of if
     } // end of for
     jTextFieldChat.setText("");
   } // end of jButtonSend_ActionPerformed
+  
+  private void getJmDnsRunning(){
+    jmDNS.registerZeroConf();
+    jmDNS.startIndex();  
+  }
   
   // Ende Methoden
   
@@ -99,6 +107,10 @@ public class LocalChat extends JFrame {
     LocalChat localChat = new LocalChat("LocalChat");
     LocalChatDecrypt decrypt = new LocalChatDecrypt();
     LocalChatEncrypt encrypt = new LocalChatEncrypt();
+    
+    localChat.getJmDnsRunning();
+    
+    System.out.println("First stage engaded");
     
     for (int i=0;i<decrypt.amountOfTypes();i++) {
       localChat.jComboBoxTypes.addItem(decrypt.getTypes()[i]);

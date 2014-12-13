@@ -14,16 +14,16 @@ import java.io.*;
 public class LocalChatClient {
   
   // Anfang Attribute
-  private int port = 9876;
+  // private int port = 9876;
   
   // Ende Attribute
   
   // Server is not able to handle feedback and identification!!!!
   
   // Anfang Methoden
-  public void send(String msg, String adresse){
+  public void send(String msg, String adresse, int port){
     try { 
-      startClient(adresse, msg);
+      startClient(adresse, msg, port);
     }
     catch (IOException ioe) {
       System.err.println("Client can't open for business!");
@@ -31,7 +31,7 @@ public class LocalChatClient {
     }
   }
   
-  private void startClient(String iP, String msg) throws IOException {
+  private void startClient(String iP, String msg, int port) throws IOException {
     Socket cSocket = new Socket(iP, port);
     OutputStream out = cSocket.getOutputStream();
     PrintStream pout = new PrintStream(out);
