@@ -88,9 +88,13 @@ public class LocalChat extends JFrame {
     
     System.out.print(Arrays.toString(jmDNS.getIpIndex()));
     
-    for (int i=0;i<=20;i++) {
+    for (int i=0;i<jmDNS.getIpIndex().length;i++) {
       if (jmDNS.ipIndexAt(i)!=null) {
-        client.send(decryptMsg,jmDNS.ipIndexAt(i),jmDNS.portIndexAt(i));
+        client.send(decryptMsg,jmDNS.ipIndexAt(i),jmDNS.portIndexAt(i));        
+        if(jTextAreaOnline.getText().toLowerCase().contains(jmDNS.descriptionIndexAt(i).toLowerCase()) != true){
+            jTextAreaOnline.append(jmDNS.descriptionIndexAt(i));
+            jTextAreaOnline.append("\n");
+        }
       } // end of if
     } // end of for
     jTextFieldChat.setText("");

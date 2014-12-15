@@ -12,6 +12,7 @@ package localchat;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.util.Arrays;
 import javax.jmdns.*;
 
 // Please finish DNS service stuff :)
@@ -34,24 +35,36 @@ public class LocalChatJmDNS {
   private int[] portIndex = new int[maxIndex];
   private String[] descriptionIndex = new String[maxIndex];
   
+  private boolean serviceRegistered = false;
+  
   // Ende Attribute
   
   // Anfang Methoden
   
   private void registerDNS(String serviceType, String serviceName){
     try{
-        String localHost = "" + InetAddress.getLocalHost();
-        String[] myIp = localHost.split("/");
-        ipIndex[0] = myIp[1];
-        portIndex[0] = port;
-        descriptionIndex[0] = myDescription;
-        
-        jmDnsServer = JmDNS.create(ipIndex[0]);
+        if(serviceRegistered!=true){
+            String localHost = "" + InetAddress.getLocalHost();
+            System.out.println(localHost);
+            String[] myIp = localHost.split("/");
+            ipIndex[0] = myIp[1];
+            portIndex[0] = port;
+            descriptionIndex[0] = myDescription;
 
-        // Register a test service.
-        ServiceInfo localChat = ServiceInfo.create(serviceType, serviceName, portIndex[0], descriptionIndex[0]);
+            jmDnsServer = JmDNS.create(ipIndex[0]);
 
-        jmDnsServer.registerService(localChat);
+            // Register a test service.
+            ServiceInfo localChat = ServiceInfo.create(serviceType, serviceName, portIndex[0], descriptionIndex[0]);
+            
+            System.out.println(Arrays.toString(ipIndex));
+            
+            jmDnsServer.registerService(localChat);
+
+            serviceRegistered = true;
+        }
+        else{
+            jmDnsServer.close();
+        }
     }
     catch (IOException ioe){
         System.err.println("jmDNS Service can't be created or registered");
@@ -81,28 +94,20 @@ public class LocalChatJmDNS {
           public void serviceRemoved(ServiceEvent event) {
               ServiceInfo serviceInfo = event.getInfo();
               if(serviceInfo.getName().equals(varName)) {
-                  System.out.println("Got you " + serviceInfo.getName());
+                  System.out.println("Lost you " + serviceInfo.getName());
                   // Service got removed :(
               }
           }
-          public void serviceAdded(ServiceEvent event) {}
+          public void serviceAdded(ServiceEvent event) {
+          System.out.println("got ya!!!");
+          }
       });
       
       System.out.println("search for services started");
   }
   
   private void removeService(){
-      
-    // please finish the remove method!!!
-      
-      try{ 
-        // jmDnsServer.removeServiceListener(varType, ServiceListener);
-        jmDnsServer.close();
-      }
-      catch (IOException ioe) {
-        System.err.println("jmDNS Server can't be closed");
-        ioe.printStackTrace(System.err);
-    }
+      serviceRegistered = false;
   }
   
   private void addToIndex(String inetAddr){
