@@ -51,12 +51,18 @@ public class LocalChatJmDNS {
             portIndex[0] = port;
             descriptionIndex[0] = myDescription;
 
+            System.out.println("ipIndex used for own ip: " + ipIndex[0]);
+            
             jmDnsServer = JmDNS.create(ipIndex[0]);
 
             // Register a test service.
             ServiceInfo localChat = ServiceInfo.create(serviceType, serviceName, portIndex[0], descriptionIndex[0]);
             
-            System.out.println(Arrays.toString(ipIndex));
+            System.out.println("Domain of the created service: " + localChat.getDomain());
+            System.out.println("Server of the created service: " + localChat.getServer());
+            System.out.println("Adress ipv4 of the created service: " + localChat.getHostAddress());
+            
+            System.out.println("entire ipIndex: " + Arrays.toString(ipIndex));
             
             jmDnsServer.registerService(localChat);
 
@@ -79,7 +85,17 @@ public class LocalChatJmDNS {
           
           public void serviceResolved(ServiceEvent event) {
               ServiceInfo serviceInfo = event.getInfo();
-              if(serviceInfo.getName().equals(varName)) {
+              
+              System.out.println("Service Resolved :");
+              System.out.println("Type:" + serviceInfo.getType());
+              System.out.println("Name:" + serviceInfo.getName());
+              System.out.println("IP:" + serviceInfo.getHostAddress());
+              System.out.println("Port:" + serviceInfo.getPort());
+              System.out.println("Name:" + serviceInfo.getName());
+              System.out.println("Desc:" + serviceInfo.getNiceTextString());
+              System.out.println("Entry Point:" + serviceInfo.getURL());
+              
+              if(serviceInfo.getName().equals(varName)&&serviceInfo.getInet4Address() != null) {
                   // Found new Service :)
                   InetAddress newIp = serviceInfo.getInetAddresses()[0];
                   addToIndex(("" + newIp));
@@ -93,13 +109,33 @@ public class LocalChatJmDNS {
           }
           public void serviceRemoved(ServiceEvent event) {
               ServiceInfo serviceInfo = event.getInfo();
+              
+              System.out.println("Service Removed :");
+              System.out.println("Type:" + serviceInfo.getType());
+              System.out.println("Name:" + serviceInfo.getName());
+              System.out.println("IP:" + serviceInfo.getHostAddress());
+              System.out.println("Port:" + serviceInfo.getPort());
+              System.out.println("Name:" + serviceInfo.getName());
+              System.out.println("Desc:" + serviceInfo.getNiceTextString());
+              System.out.println("Entry Point:" + serviceInfo.getURL());
+              
               if(serviceInfo.getName().equals(varName)) {
                   System.out.println("Lost you " + serviceInfo.getName());
                   // Service got removed :(
               }
           }
           public void serviceAdded(ServiceEvent event) {
-          System.out.println("got ya!!!");
+              ServiceInfo serviceInfo = event.getInfo();
+          
+              System.out.println("Service Added :");
+              System.out.println("Type:" + serviceInfo.getType());
+              System.out.println("Name:" + serviceInfo.getName());
+              System.out.println("IP:" + serviceInfo.getHostAddress());
+              System.out.println("Port:" + serviceInfo.getPort());
+              System.out.println("Name:" + serviceInfo.getName());
+              System.out.println("Desc:" + serviceInfo.getNiceTextString());
+              System.out.println("Entry Point:" + serviceInfo.getURL());
+          
           }
       });
       
